@@ -1,0 +1,234 @@
+
+using System;
+using static System.Console;
+
+namespace SimpleProject
+{
+    class Program
+    {
+        static void f2()
+        {
+            throw new Exception("MyException"); // генерация исключения
+        }
+        static void f1()
+        {
+            f2();
+        }
+        static void f()
+        {
+            try
+            {
+                f1();
+            }
+            catch (Exception e) // перехват исключения
+            {
+                WriteLine(e.Message);
+                // вывод стека трассировки
+                WriteLine("Stack trace:\n {0} ", e.StackTrace);
+            }
+        }
+        static void Main(string[] args)
+        {
+            f();
+        }
+    }
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+using System;
+using static System.Console;
+
+namespace SimpleProject
+{
+    class Program
+    {
+        static int DivisionNumbers(int n1, int n2)
+        {
+            int result = 0;
+
+            try
+            {
+                result = n1 / n2;
+            }
+            catch (DivideByZeroException de)
+            {
+                throw new Exception("Проверка фильтров исключения", de);
+            }
+            return result;
+        }
+
+        static void Main(string[] args)
+        {
+            WriteLine("Введите два числа");
+
+            int number1, number2, result = 0;
+
+            try
+            {
+                number1 = int.Parse(ReadLine());
+                number2 = int.Parse(ReadLine());
+
+                result = DivisionNumbers(number1, number2);
+
+                WriteLine($"Результат деления чисел: { result }");
+            }
+            catch (Exception e) when (e.InnerException != null)
+            {
+                WriteLine(e.Message); // дополнительная информация
+                WriteLine(e.InnerException.Message); // предыдущее исключение
+            }
+            catch (Exception e)
+            {
+                WriteLine(e.Message);
+            }
+        }
+    }
+}
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+using System;
+using static System.Console;
+
+namespace SimpleProject
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            do
+            {
+                try
+                {
+                    Write($"\nВведите число: ");
+                    //чтение ввода пользователя
+                    string str = ReadLine();
+                    //условие выхода из цикла
+                    if (string.IsNullOrEmpty(str))
+                    {
+                        return;
+                    }
+
+                    //преобразование строки в число
+                    int number = Convert.ToInt32(str);
+                    //проверка, что полученное число принадлежит
+                    //области определения функции ln()
+                    if (number <= 0)
+                    {
+                        throw new ArgumentOutOfRangeException("число <= 0");
+                    }
+
+                    double log = Math.Log(number);
+
+                    WriteLine($"ln({number}) = {log}\n100/ln({number}) = {100 / (int)log}");
+                }
+                catch (FormatException fe)
+                {
+                    //происходит, если введенное пользователем значение 
+                    //невозможно преобразовать в целое число
+                    WriteLine(fe.Message);
+                }
+                catch (DivideByZeroException de)
+                {
+                    //происходит, если Log(n) = 0 (т.е. n = 1)
+                    WriteLine(de.Message);
+                }
+                catch (Exception e)
+                {
+                    //прехват всех остальных исключений
+                    WriteLine($"Exception: { e.Message }");
+                }
+            } while (true);
+        }
+    }
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+using System;
+
+namespace ConsoleApp1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //int number1, number2, result;
+            //string str = null;
+            //bool isTruth = true;
+
+            //do
+            //{
+            //    Console.Write("Enter two numbers: ");
+
+            //    try
+            //    {
+            //        number1 = int.Parse(Console.ReadLine());
+            //        number2 = int.Parse(Console.ReadLine());
+
+            //        result = number1 / number2;
+
+            //        if (result % 2 != 0)
+            //        {
+            //            throw new MyException();
+            //        }
+
+            //        Console.WriteLine($"Result: {result}");
+
+            //        str = "Hey!";
+
+            //        isTruth = false;
+            //    }
+            //    catch (MyException my)
+            //    {
+            //        Console.WriteLine(my.TimeException);
+            //    }
+            //    //catch (FormatException fe)
+            //    //{
+            //    //    Console.WriteLine(fe.Message);
+            //    //}
+            //    //catch (OverflowException oe)
+            //    //{
+            //    //    Console.WriteLine(oe.Message);
+            //    //}
+            //    //catch(DivideByZeroException de)
+            //    //{
+            //    //    Console.WriteLine(de.Message);
+            //    //}
+            //    catch (Exception ex)
+            //    {
+            //        Console.WriteLine(ex.Message);
+            //    }
+            //    //catch
+            //    //{
+            //    //    Console.WriteLine("Error");
+            //    //}
+
+            //    Console.WriteLine("The end!");
+
+            //} while (isTruth);
+
+            //Console.WriteLine(str.Length);
+
+            byte b = 100;
+            Console.WriteLine(unchecked((byte)(b + 200)));
+            try
+            {
+                checked
+                {
+                    b = (byte)(b + 200);
+                }
+            }
+            catch (OverflowException oe)
+            {
+                Console.WriteLine(oe.Message);
+            }
+            Console.WriteLine(b);
+
+            Console.ReadKey();
+        }
+    }
+}

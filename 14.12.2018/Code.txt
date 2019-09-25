@@ -1,0 +1,801 @@
+						Перегрузка операторов
+
+				Унарные
+using static System.Console;
+
+namespace SimpleProject
+{
+    class Point
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        //перегрузка инкремента
+        public static Point operator ++(Point s)
+        {
+            s.X++;
+            s.Y++;
+            return s;
+        }
+        //перегрузка декремента
+        public static Point operator --(Point s)
+        {
+            s.X--;
+            s.Y--;
+            return s;
+        }
+        //перегрузка оператора -
+        public static Point operator -(Point s)
+        {
+            return new Point { X = -s.X, Y = -s.Y };
+        }
+
+        public override string ToString()
+        {
+            return $"Point: X = {X}, Y = {Y}";
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            Point point = new Point { X = 10, Y = 10 };
+            WriteLine($"Исходная точка\n{point}");
+
+            WriteLine("Префиксная и постфиксная формы инкремента выполняются одинаково");
+            WriteLine(++point); // x=11, y=11
+            WriteLine(point++); // x=12, y=12
+
+            WriteLine($"Префиксная форма декремента\n{--point}");
+
+            WriteLine($"Выполнение оператора –\n{-point}");
+
+            WriteLine($"не изменило исходную точку\n{point}");
+        }
+    }
+}
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+				Бинарные
+using static System.Console;
+
+namespace SimpleProject
+{
+    class Point
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+    }
+
+    class Vector
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        public Vector() { }
+
+        public Vector(Point begin, Point end)
+        {
+            X = end.X - begin.X;
+            Y = end.Y - begin.Y;
+        }
+
+        public static Vector operator +(Vector v1, Vector v2)
+        {
+            return new Vector { X = v1.X + v2.X, Y = v1.Y + v2.Y };
+        }
+
+        public static Vector operator -(Vector v1, Vector v2)
+        {
+            return new Vector { X = v1.X - v2.X, Y = v1.Y - v2.Y };
+        }
+
+        public static Vector operator *(Vector v, int n)
+        {
+            v.X *= n;
+            v.Y *= n;
+            return v;
+        }
+
+        public override string ToString()
+        {
+            return $"Vector: X = {X}, Y = {Y}";
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            Point p1 = new Point { X = 2, Y = 3 };
+            Point p2 = new Point { X = 3, Y = 1 };
+
+            Vector v1 = new Vector(p1, p2);
+
+            Vector v2 = new Vector { X = 2, Y = 3 };
+
+            WriteLine($"\tВектора\n{v1}\n{v2}");
+
+            WriteLine($"\n\tСложение векторов\n{v1 + v2}\n"); // x=3, y=1
+
+            WriteLine($"\tРазность векторов\n{v1 - v2}\n"); // x=-1, y=-5
+
+            WriteLine("Введите целое число");
+
+            int n = int.Parse(ReadLine());
+
+            v1 *= n;
+
+            WriteLine($"\n\tУмножение вектора на число {n}\n{v1}\n");
+        }
+    }
+}
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+				Сравнения
+
+using System;
+using static System.Console;
+
+namespace SimpleProject
+{
+    class Point
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        // переопределение метода Equals
+        public override bool Equals(object obj)
+        {
+            return this.ToString() == obj.ToString();
+        }
+
+        // необходимо также переопределить метод GetHashCode
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
+
+        public static bool operator ==(Point p1, Point p2)
+        {
+            return p1.Equals(p2);
+        }
+
+        public static bool operator !=(Point p1, Point p2)
+        {
+            return !(p1 == p2);
+        }
+
+        public static bool operator >(Point p1, Point p2)
+        {
+            return Math.Sqrt(p1.X * p1.X + p1.Y * p1.Y) > Math.Sqrt(p2.X * p2.X + p2.Y * p2.Y);
+        }
+
+        public static bool operator <(Point p1, Point p2)
+        {
+            return Math.Sqrt(p1.X * p1.X + p1.Y * p1.Y) < Math.Sqrt(p2.X * p2.X + p2.Y * p2.Y);
+        }
+
+        public override string ToString()
+        {
+            return $"Point: X = {X}, Y = {Y}.";
+        }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Point point1 = new Point { X = 10, Y = 10 };
+            Point point2 = new Point { X = 20, Y = 20 };
+
+            WriteLine($"point1: {point1}");
+            WriteLine($"point2: {point2}\n");
+
+            WriteLine($"point1 == point2: {point1 == point2}"); // false
+            WriteLine($"point1 != point2: {point1 != point2}\n"); // true
+
+            WriteLine($"point1 > point2: {point1 > point2}"); // false
+            WriteLine($"point1 < point2: {point1 < point2}"); // true
+        }
+    }
+}
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+				Логические && и ||
+
+		Необходимо выполнить ряд требований:
+•	в классе должна быть выполнена перегрузка операторов true и false;
+•	в классе необходимо перегрузить логические операторы & и |;
+•	методы перегрузки операторов & и | должны возвращать тип класса, в котором осуществляется перегрузка;
+•	параметрами в методах перегрузки операторов & и | должны быть ссылки на класс, который содержит перегрузку.
+
+
+Для оператора && первый операнд проверяется с использованием перегруженного оператора false, если результат равен false, тогда дальнейшее сравнение операндов осуществляется с использованием перегруженного оператора &, результат этого сравнения проверяется вызовом перегруженного оператора true, так как используется условный оператор. Если результат оператора false для первого операнда будет равен true, тогда оператор & выполняться не будет, а параметром для оператора true будет являться первый операнд.
+
+Для оператора || первый операнд проверяется с использованием перегруженного оператора true, если результат равен false, тогда дальнейшее сравнение операндов осуществляется с использованием перегруженного оператора |, результат этого сравнения также проверяется вызовом перегруженного оператора true (условный оператор). Если результат оператора true для первого операнда будет равен true, тогда оператор | выполняться не будет, а параметром для оператора true будет являться первый операнд.
+
+using static System.Console;
+
+namespace SimpleProject
+{
+    class Point
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        public static bool operator true(Point p)
+        {
+            return p.X != 0 || p.Y != 0 ? true : false;
+        }
+
+        public static bool operator false(Point p)
+        {
+            return p.X == 0 && p.Y == 0 ? true : false;
+        }
+
+        // перегружаем логический оператор |
+        public static Point operator |(Point p1, Point p2)
+        {
+            if ((p1.X != 0 || p1.Y != 0) || (p2.X != 0 || p2.Y != 0))
+                return p2;
+
+            return new Point();
+        }
+
+        // перегружаем логический оператор &
+        public static Point operator &(Point p1, Point p2)
+        {
+            if ((p1.X != 0 && p1.Y != 0) && (p2.X != 0 && p2.Y != 0))
+                return p2;
+
+            return new Point();
+        }
+
+        public override string ToString()
+        {
+            return $"Point: X = {X}, Y = {Y}.";
+        }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Point point1 = new Point { X = 10, Y = 10 };
+            Point point2 = new Point { X = 0, Y = 0 };
+
+            WriteLine($"point1: {point1}");
+            WriteLine($"point2: {point2}\n");
+
+            Write("point1 && point2: ");
+
+            if (point1 && point2)
+            {
+                WriteLine("true");
+            }
+            else
+            {
+                WriteLine("false");
+            }
+
+            Write("point1 || point2: ");
+
+            if (point1 || point2)
+            {
+                WriteLine("true");
+            }
+            else
+            {
+                WriteLine("false");
+            }
+        }
+    }
+}
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		Явное приведение типов требуется, если возможна потеря данных в результате приведения. Например:
+•	при преобразовании int в short, потому что размер short недостаточен для сохранения значения int;
+•	при преобразовании типов данных со знаком в беззнаковые может быть получен неверный результат, если переменная со знаком содержит отрицательное значение;
+•	при конвертировании типов с плавающей точкой в целые, так как дробная часть теряется;
+•	при конвертировании типа, допускающего null-значения, в тип, не допускающий null, если исходная переменная содержит null, генерируется исключение.
+
+		Операция приведения должна быть помечена либо как implicit, либо как explicit, чтобы указать, как ее предполагается использовать:
+•	implicit задает неявное преобразование, его можно использовать, если преобразование всегда безопасно независимо от значения переменной, которая преобразуется;
+•	explicit задает явное преобразование, его следует использовать, если возможна потеря данных или возникновение исключения.
+
+		Следующие ограничения:
+•	нельзя определить приведение между классами, если один из них является наследником другого;
+•	приведение может быть определено только в одном из типов: либо в исходном типе, либо в типе назначения.
+
+    abstract class Figure
+    {
+        public abstract void Draw();
+    }
+    abstract class Quadrangle:Figure { }
+
+    class Rectangle : Quadrangle
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public override void Draw()
+        {
+            for (int i = 0; i < Height; i++)
+            {
+                for (int j = 0; j < Width; j++)
+                {
+                    Console.Write("*");
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+        }
+
+        public static implicit operator Rectangle(Square s)
+        {
+            return new Rectangle
+            {
+                Width = s.Length * 2,
+                Height = s.Length
+            };
+        }
+
+        public override string ToString()
+        {
+            return $"Rectangle: Width: {Width}, Height: {Height}" ;
+        }
+    }
+    class Square : Quadrangle
+    {
+        public int Length { get; set; }
+        public override void Draw()
+        {
+            for (int i = 0; i < Length; i++)
+            {
+                for (int j = 0; j < Length; j++)
+                {
+                    Console.Write("*");
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+        }
+
+        public static explicit operator Square(Rectangle r)
+        {
+            return new Square { Length = r.Height };
+        }
+
+        public static implicit operator Square(int number)
+        {
+            return new Square { Length = number };
+        }
+
+        public static explicit operator int(Square s)
+        {
+            return s.Length;
+        }
+
+        public override string ToString()
+        {
+            return $"Rectangle: Length = {Length}";
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Rectangle rectangle = new Rectangle { Width = 5, Height = 10 };
+
+            Console.WriteLine(rectangle);
+
+            Square square = new Square { Length = 7 };
+            Console.WriteLine(square);
+
+            Rectangle rect = square;
+            Console.WriteLine(rect); // 14 7
+
+            Square sq = (Square)rectangle;
+            Console.WriteLine(sq); // 10
+
+            Square s1 = 23;
+            Console.WriteLine(s1);
+
+            Console.SetCursorPosition(20, 10);
+
+            int number = (int)square;
+            Console.WriteLine(number);
+            
+            Console.ReadKey();
+        }
+    }
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+using System;
+using static System.Console;
+
+namespace SimpleProject
+{
+    public class Laptop
+    {
+        public string Vendor { get; set; }
+        public double Price { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Vendor} {Price}";
+        }
+    }
+
+    public class Shop
+    {
+        Laptop[] laptopArr;
+
+        public Shop(int size)
+        {
+            laptopArr = new Laptop[size];
+        }
+        public int Length
+        {
+            get { return laptopArr.Length; }
+        }
+
+        public Laptop this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < Length)
+                {
+                    return laptopArr[index];
+                }
+                throw new IndexOutOfRangeException();
+            }
+            set
+            {
+                if (index >= 0 && index < Length)
+                {
+                    laptopArr[index] = value;
+                }
+            }
+        }
+    }
+    public class Program
+    {
+        public static void Main()
+        {
+            Shop laptops = new Shop(3);
+            laptops[0] = new Laptop { Vendor = "Samsung", Price = 5200 };
+            laptops[1] = new Laptop { Vendor = "Asus", Price = 4700 };
+            laptops[2] = new Laptop { Vendor = "LG", Price = 4300 };
+
+            try
+            {
+                for (int i = 0; i < laptops.Length; i++)
+                {
+                    WriteLine(laptops[i]);
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteLine(ex.Message);
+            }
+        }
+    }
+}
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+using System;
+using static System.Console;
+
+namespace SimpleProject
+{
+    public class Laptop
+    {
+        public string Vendor { get; set; }
+        public double Price { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Vendor} {Price}";
+        }
+    }
+
+    enum Vendors { Samsung, Asus, LG };
+
+    public class Shop
+    {
+        private Laptop[] laptopArr;
+
+        public Shop(int size)
+        {
+            laptopArr = new Laptop[size];
+        }
+        public int Length
+        {
+            get { return laptopArr.Length; }
+        }
+
+        public Laptop this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < laptopArr.Length)
+                {
+                    return laptopArr[index];
+                }
+                throw new IndexOutOfRangeException();
+            }
+            set
+            {
+                if (index >= 0 && index < laptopArr.Length)
+                {
+                    laptopArr[index] = value;
+                }
+            }
+        }
+
+        public Laptop this[string name]
+        {
+            get
+            {
+                if (Enum.IsDefined(typeof(Vendors), name))
+                {
+                    return laptopArr[(int)Enum.Parse(typeof(Vendors), name)];
+                }
+                else
+                {
+                    return new Laptop();
+                }
+            }
+            set
+            {
+                if (Enum.IsDefined(typeof(Vendors), name))
+                {
+                    laptopArr[(int)Enum.Parse(typeof(Vendors), name)] = value;
+                }
+            }
+        }
+
+        private int FindByPrice(double price)
+        {
+            for (int i = 0; i < laptopArr.Length; i++)
+            {
+                if (laptopArr[i].Price == price)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public Laptop this[double price]
+        {
+            get
+            {
+                int index = FindByPrice(price);
+                if (index >= 0)
+                {
+                    return this[index];
+                }
+                throw new Exception("Недопустимая стоимость.");
+            }
+            set
+            {
+                int index = FindByPrice(price);
+                if (index >= 0)
+                {
+                    this[index] = value;
+                }
+            }
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            Shop laptops = new Shop(3);
+            laptops[0] = new Laptop { Vendor = "Samsung", Price = 5200 };
+            laptops[1] = new Laptop { Vendor = "Asus", Price = 4700 };
+            laptops[2] = new Laptop { Vendor = "LG", Price = 4300 };
+
+            try
+            {
+                for (int i = 0; i < laptops.Length; i++)
+                {
+                    WriteLine(laptops[i]);
+                }
+                WriteLine();
+
+                WriteLine($"Производитель Asus: {laptops["Asus"]}.");
+
+                WriteLine($"Производитель HP: {laptops["HP"]}.");
+                
+                laptops["HP"] = new Laptop(); // игнорирование
+
+                WriteLine($"Стоимость 4300: {laptops[4300.0]}.");
+
+                // недопустимая стоимость
+                WriteLine($"Стоимость 10500: {laptops[10500.0]}.");
+
+                laptops[10500.0] = new Laptop(); // игнорирование
+            }
+            catch (Exception ex)
+            {
+                WriteLine(ex.Message);
+            }
+        }
+    }
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+using static System.Console;
+
+namespace SimpleProject
+{
+    public class MultArray
+    {
+        private int[,] array;
+
+        public int Rows { get; private set; }
+
+        public int Cols { get; private set; }
+
+        public MultArray(int rows, int cols)
+        {
+            Rows = rows;
+            Cols = cols;
+            array = new int[rows, cols];
+        }
+
+        public int this[int r, int c]
+        {
+            get { return array[r, c]; }
+            set { array[r, c] = value; }
+        }
+    }
+    public class Program
+    {
+        static void Main()
+        {
+            MultArray multArray = new MultArray(2, 3);
+
+            for (int i = 0; i < multArray.Rows; i++)
+            {
+                for (int j = 0; j < multArray.Cols; j++)
+                {
+                    multArray[i, j] = i + j;
+                    Write($"{multArray[i, j]} ");
+                }
+                WriteLine();
+            }
+        }
+    }
+}
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+        enum CommodityType // тип товара
+        {
+            FrozenFood, Food, DomesticChemistry, BuildingMaterials, Petrol
+        }
+
+        enum TransportType // тип транспорта
+        {
+            Semitrailer, Coupling, Refrigerator, OpenSideTruck, FuelTruck
+        }
+
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Введите число от 1 до 5");
+
+            int number = int.Parse(Console.ReadLine());
+
+            if (number > 0 && number < 6)
+            {
+                CommodityType commodity = (CommodityType)Enum.GetValues(typeof(CommodityType)).GetValue(number - 1);
+
+                TransportType transport = TransportType.Semitrailer;
+
+                switch (commodity)
+                {
+                    case CommodityType.FrozenFood:
+                        transport = TransportType.Refrigerator;
+                        break;
+                    case CommodityType.Food:
+                        transport = TransportType.Semitrailer;
+                        break;
+                    case CommodityType.DomesticChemistry:
+                        transport = TransportType.Coupling;
+                        break;
+                    case CommodityType.BuildingMaterials:
+                        transport = TransportType.OpenSideTruck;
+                        break;
+                    case CommodityType.Petrol:
+                        transport = TransportType.FuelTruck;
+                        break;
+                }
+                Console.WriteLine("Для товара - {0} необходим транспорт - {1}.", commodity, transport);
+            }
+            else
+            {
+                Console.WriteLine("Ошибка ввода");
+            }
+        }
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+enum DistanceSun : ulong
+{
+    Sun = 0, Mercury = 57900000, Venus = 108200000, Earth = 149600000,
+    Mars = 227900000, Jupiter = 7783000000, Saturn = 1427000000,
+    Uranus = 2870000000, Neptune = 4496000000
+}
+
+static void Main(string[] args)
+{
+    string moon = "Moon";
+
+    // проверка наличия константы в заданном перечислении
+    if (!Enum.IsDefined(typeof(DistanceSun), moon))
+    {
+        Console.WriteLine("\tЗначения " + moon + " нет в перечислении DistanceSun.");
+    }
+    Console.WriteLine("\n\tФорматированный вывод всех значений констант указанного перечисления.");
+    foreach (DistanceSun item in Enum.GetValues(typeof(DistanceSun)))
+    {
+        Console.WriteLine("{0,-10} {1,-10} {2,20}", 
+        Enum.Format(typeof(DistanceSun), item, "G"), // вывод в виде строки с 									именем константы
+        Enum.Format(typeof(DistanceSun), item, "D"), // вывод в виде 											десятичного значения
+        Enum.Format(typeof(DistanceSun), item, "X")); // вывод в виде											16-ричного значения
+//Console.WriteLine($"{Enum.Format(typeof(DistanceSun), item, "G"),-10} {Enum.Format(typeof(DistanceSun), item, "D"),-10} {Enum.Format(typeof(DistanceSun), item, "X"),20}");
+    }
+    Console.WriteLine("\n\tВсе значения констант указанного перечисления.");
+    foreach (string str in Enum.GetNames(typeof(DistanceSun)))
+    {
+        Console.WriteLine(str);
+    }
+
+    ulong number = 227900000;
+    Console.WriteLine("\n\tИмя константы со значением {0} из указанного перечисления.\n", number);
+    Console.WriteLine(Enum.GetName(typeof(DistanceSun), number));
+}
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Разработать класс Fraction, представляющий простую дробь. В классе предусмотреть два поля: числитель и знаменатель дроби. Выполнить перегрузку следующих операторов: +,-,*,/,==,!=,<,>, true и false.
+Арифметические действия и сравнение выполняется в соответствии с правилами работы с дробями. Оператор true возвращает true если дробь правильная (числитель меньше знаменателя), оператор false возвращает true если дробь неправильная (числитель больше знаменателя).
+Выполнить перегрузку операторов, необходимых для успешной компиляции следующего фрагмента кода:
+		Fraction f = new Fraction(3, 4);
+		int a = 10;
+		Fraction f1 = f * a;
+		Fraction f2 = a * f;
+		double d = 1.5;
+		Fraction f3 = f + d;
+
+
+Реализовать класс «Перекидной календарь». Объект класса отображает календарь выбранного месяца. 
+По умолчанию – текущий месяц. Перегрузить для класса «Перекидной календарь» операторы ++ (перейти на следующий месяц), 
+-- (перейти на предыдущий месяц), + (перейти на N месяцев вперед), - (перейти на N месяцев назад).
+ Программа предоставляет пользователю возможность «перелистывать» календарь с помощью клавиатуры 
+(стрелка вправо – на месяц вперед, влево – на месяц назад,  PgUp – на 12 месяцев вперед, 
+PgDn – на 12 месяцев назад, стрелка вверх – на 6 месяцев вперед, стрелка вниз – на 6 месяцев назад). 
+Календарь отображать на экране консоли в виде таблицы, с использованием цветов для рабочих
+ и выходных (суббота, воскресенье) дней. Названия месяцев отображаются соответствующим времени года цветом 
+(Зима – синий, Весна – Зеленый, Лето – Желтый, Осень – Красный). Минимальная дата, которую способен отобразить 
+календарь – 1.01.1990г., максимальная – 31.12.2020. При попытке выйти за указанную границу дат, календарь должен
+ сгенерировать исключительную ситуацию, которая должна быть обработана в программе.

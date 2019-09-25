@@ -1,0 +1,148 @@
+    class Human
+    {
+        private string _firstName;
+        private string _lastName;
+        private DateTime _birthDate;
+
+        public Human(string fName, string lName, DateTime date)
+        {
+            _firstName = fName;
+            _lastName = lName;
+            _birthDate = date;
+        }
+
+        public void Print()
+        {
+            Console.Write($"Last name: {_lastName} first name: {_firstName} Birth date: {_birthDate.ToLongDateString()} ");
+        }
+    }
+
+    class Employee:Human
+    {
+        double _salary;
+        public Employee(string fName, string lName, DateTime date) : base(fName, lName, date)
+        {
+        }
+        public Employee(string fName, string lName, DateTime date, double salary) : base(fName, lName, date)
+        {
+            _salary = salary;
+        }
+        public new void Print()
+        {
+            //base.Show();
+            Console.WriteLine($"salary: {_salary}");
+        }
+    }
+
+    class Manager:Employee
+    {
+        string _activity;
+        public Manager(string fName, string lName, DateTime date, double salary, string activity) : base(fName, lName, date, salary)
+        {
+            _activity = activity;
+        }
+
+        public void ShowManager()
+        {
+            Console.WriteLine($"Manager. Activity: {_activity}");
+        }
+    }
+
+    class Scientist:Employee
+    {
+        string _direction;
+        public Scientist(string fName, string lName, DateTime date, double salary, string direction) : base(fName, lName, date, salary)
+        {
+            _direction = direction;
+        }
+
+        public void ShowScientist()
+        {
+            Console.WriteLine($"Scientist. Direction: {_direction}");
+        }
+    }
+    
+    class Specialist:Employee
+    {
+        string _qualification;
+        public Specialist(string fName, string lName, DateTime date, double salary, string qualification) : base(fName, lName, date, salary)
+        {
+            _qualification = qualification;
+        }
+
+        public void ShowSpecialist()
+        {
+            Console.WriteLine($"Specialist. Qualification: {_qualification}");
+        }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //Employee employee = new Employee("John", "Doe",new DateTime(1998,4,23), 2876.56);
+            //employee.Print();
+
+            Employee manager = new Manager("Jim", "Beam", new DateTime(1979, 3, 15), 4567.4, "products");
+
+            //((Manager)manager).ShowManager();
+
+            Employee[] employees =
+            {
+                manager,
+                new Scientist("Jack","Smith",new DateTime(1999,7,3), 1234,"history"),
+                new Specialist("Jane","Smith",new DateTime(2000,5,12),5678.4,"programming")
+            };
+
+            foreach (Employee empl in employees)
+            {
+                empl.Print();
+
+                try
+                {
+                    ((Manager)empl).ShowManager();
+                }
+                catch
+                {
+                }
+
+                Scientist scientist = empl as Scientist;
+                if (scientist!=null)
+                {
+                    scientist.ShowScientist();
+                }
+
+                if (empl is Specialist)
+                {
+                    (empl as Specialist).ShowSpecialist();
+                    //((Specialist)empl).ShowSpecialist();
+                }
+            }
+
+            Console.ReadKey();
+        }
+    }
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+	    Manager manager = new Manager("Jim", "Beam", new DateTime(1979, 3, 15), 4567.4, "products");
+
+            Console.WriteLine($"Полное имя типа - {manager.GetType().FullName}.");
+
+            Console.WriteLine($"Имя текущего элемента - {manager.GetType().Name}.");
+
+            Console.WriteLine($"Базовый класс текущего элемента - {manager.GetType().BaseType}.");
+
+            Console.WriteLine($"Является ли текущий элемент абстрактным объектом - {manager.GetType().IsAbstract}.");
+
+            Console.WriteLine($"Является ли объект классом - {manager.GetType().IsClass}.");
+
+            Console.WriteLine($"Можно ли получить доступ к объекту из кода за пределами сборки - {manager.GetType().IsVisible}.");
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Разработать абстрактный класс «Геометрическая Фигура» с методами «Площадь Фигуры» и «Периметр Фигуры».
+Разработать классы-наследники: Треугольник, Квадрат, Ромб, Прямоугольник, Параллелограмм, Трапеция, Круг, Эллипс.
+Реализовать конструкторы, которые однозначно определяют объекты данных классов.
+Реализовать класс «Составная Фигура», который может состоять из любого количества «Геометрических Фигур».
+Для данного класса определить методы нахождения площади и периметра фигуры.

@@ -1,0 +1,7 @@
+C:\Users\Висковатых.Наталия\source\repos\SaveAtFile\SaveAtFile\bin\Debug\SaveAtFile.exe.config
+C:\Users\Висковатых.Наталия\source\repos\SaveAtFile\SaveAtFile\bin\Debug\SaveAtFile.exe
+C:\Users\Висковатых.Наталия\source\repos\SaveAtFile\SaveAtFile\bin\Debug\SaveAtFile.pdb
+C:\Users\Висковатых.Наталия\source\repos\SaveAtFile\SaveAtFile\obj\Debug\SaveAtFile.csprojResolveAssemblyReference.cache
+C:\Users\Висковатых.Наталия\source\repos\SaveAtFile\SaveAtFile\obj\Debug\SaveAtFile.csproj.CoreCompileInputs.cache
+C:\Users\Висковатых.Наталия\source\repos\SaveAtFile\SaveAtFile\obj\Debug\SaveAtFile.exe
+C:\Users\Висковатых.Наталия\source\repos\SaveAtFile\SaveAtFile\obj\Debug\SaveAtFile.pdb

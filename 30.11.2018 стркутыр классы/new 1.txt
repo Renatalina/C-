@@ -1,0 +1,9 @@
+если не указать модификатор доступа классу, то будет internal
+
+private 
+protected 
+internal 
+protected internal 
+public 
+
+readonly

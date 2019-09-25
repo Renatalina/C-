@@ -1,0 +1,235 @@
+
+using System;
+using static System.Console;
+
+namespace SimpleProject
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            WriteLine("Демонстрация System.GC");
+            WriteLine($"Максимальное поколение: {GC.MaxGeneration}");
+
+            GarbageHelper hlp = new GarbageHelper();
+            // узнаем поколение, в котором находится объект
+            WriteLine($"Поколение объекта: {GC.GetGeneration(hlp)}");
+            // количество занятой памяти
+            WriteLine($"Занято памяти (байт): {GC.GetTotalMemory(false)}");
+            
+            hlp.MakeGarbage(); // создаем мусор
+            WriteLine($"Занято памяти (байт): {GC.GetTotalMemory(false)}");
+            
+            GC.Collect(0); // вызываем явный сбор мусора в поколении 0
+
+            WriteLine($"Занято памяти (байт): {GC.GetTotalMemory(false)}");
+
+            WriteLine($"Поколение объекта: {GC.GetGeneration(hlp)}");
+            
+            GC.Collect(); // вызываем явный сбор мусора во всех поколениях
+
+            WriteLine($"Занято памяти (байт): {GC.GetTotalMemory(false)}");
+
+            WriteLine($"Поколение объекта: {GC.GetGeneration(hlp)}");
+        }
+    }
+    
+    // Вспомогательный класс для создания мусора
+    class GarbageHelper
+    {
+        // Метод, создающий мусор
+        public void MakeGarbage()
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                Person p = new Person();
+            }
+        }
+        class Person
+        {
+            string _name;
+            string _surname;
+            byte _age;
+        }
+    }
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+using System;
+using static System.Console;
+
+namespace SimpleProject
+{
+    class DisposeExample : IDisposable
+    {
+        //используется для того, чтобы выяснить, вызывался ли метод Dispose()
+        private bool isDisposed = false;
+
+        private void Cleaning(bool disposing) // вспомогательный метод
+        {
+            // убедиться, что ресурсы ещё не освобождены
+            if (!isDisposed) // очищать только один раз
+            {
+                //если true, то освобождаем все управляемые ресурсы
+                if (disposing)
+                {
+                    WriteLine("Освобождение управляемых ресурсов");
+                }
+                WriteLine("Освобождение неуправляемых ресурсов");
+            }
+            isDisposed = true;
+        }
+        
+        public void Dispose()
+        {
+            // вызов вспомогательного метода
+            // true - очистка инициирована пользователем объекта
+            Cleaning(true);
+            // запретить сборщику мусора осуществлять финализацию
+            GC.SuppressFinalize(this);
+        }
+
+        ~DisposeExample()
+        {
+            // false указывает на то, что очистку инициировал сборщик мусора
+            Cleaning(false);
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            DisposeExample test = new DisposeExample();
+            test.Dispose();
+
+            DisposeExample test1 = new DisposeExample();
+        }
+    }
+}
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Создать класс Студент, который содержит список оценок.
+Создать класс Группа, в которой находится список студентов.
+Создать метод выставления оценок студентов группы.
+Создать класс, который позволяет хранить и получать информацию о студентах,
+получивших определенные оценки (1, 2, 3, 4, 5).
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Задания: 
+1.	Разработать класс очереди печати сотрудников. Предусмотреть в классе методы: помещение документа 
+	в очередь печати, извлечение следующего документа из очереди печати, проверка наличия документов 
+	в очереди. При помещении документа задается его приоритет, извлекаются в первую очередь документы с более высоким приоритетом.
+
+2.	Компания сотовой связи MortimerPhones нуждается в программном обеспечении управления персоналом. 
+	Каждый из сотрудников имеет табельный номер - ID, состоящим из набора символов B342 или W435, и 
+	сохраняется в виде объекта класса EmployeeID. Вся подробная информация о сотруднике, 
+	например, его ID, имя и зарплата, сохраняется в объекте EmpoyeeData.
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using static System.Console;
+
+namespace SimpleProject
+{
+    /// <summary>
+    /// Вспомогательный класс для профилирования участка кода
+    /// выполняет измерения времени выполнения
+    /// и подсчет количества сборок мусора
+    /// </summary>
+    internal sealed class OperationTimer : IDisposable
+    {
+        long _startTime;
+        string _text;
+        int _collectionCount;
+
+        public OperationTimer(string text)
+        {
+            PrepareForOperation();
+
+            _text = text;
+
+            // сохраняется количество сборок мусора, выполненных на текущий момент
+            _collectionCount = GC.CollectionCount(0);
+
+            // сохраняется начальное время
+            _startTime = Stopwatch.GetTimestamp();
+        }
+
+        /// <summary>
+        /// Вызывается при разрушении объекта
+        /// Выводит:
+        /// значение времени, прошедшего с момента создания объекта 
+        /// до момента его удаления
+        /// количество выполненных сборок мусора, выполненных за это время
+        /// </summary>
+        public void Dispose()
+        {
+            WriteLine($"{_text}\t{(Stopwatch.GetTimestamp() - _startTime) / (double)Stopwatch.Frequency:0.00} секунды (сборок мусора {GC.CollectionCount(0) - _collectionCount})");
+        }
+        /// <summary>
+        ///Метод удаляются все неиспользуемые объекты
+        ///Это надо для "чистоты эксперимента",
+        ///т.е. чтобы сборка мусора происходила только для объектов,
+        ///которые будут создаваться в профилируемом блоке кода
+        ///</summary>
+        private static void PrepareForOperation()
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+        }
+    }
+    class Program
+    {
+        /// <summary>
+        /// метод для тестирования производительности 
+        /// обобщенного и необобщенного списка
+        /// </summary>
+        private static void ValueTypePerfTest()
+        {
+            const int COUNT = 10000000;
+
+            //объект OperationTimer 
+            //создается перед началом использования коллекции
+            //после завершения ее использования 
+            //выводит время, затраченное на работу с коллекцией  
+            using (new OperationTimer("List"))
+            {
+                //использование обобщенного списка
+                List<int> list = new List<int>(COUNT);
+                for (int n = 0; n < COUNT; n++)
+                {
+                    list.Add(n);
+                    int x = list[n];
+                }
+                list = null; // для гарантированного выполнения сборки мусора
+            }
+
+            using (new OperationTimer("ArrayList"))
+            {
+                //использование необобщенного списка
+                ArrayList array = new ArrayList();
+                for (int n = 0; n < COUNT; n++)
+                {
+                    array.Add(n); //выполняется упаковка
+                    int x = (int)array[n]; //выполняется распаковка
+                }
+                array = null; // для гарантированного выполнения сборки мусора
+            }
+        }
+        static void Main(string[] args)
+        {
+            ValueTypePerfTest();
+        }
+    }
+}

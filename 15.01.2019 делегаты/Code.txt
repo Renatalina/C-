@@ -1,0 +1,174 @@
+https://meet.google.com/iod-zcfb-icr
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    public delegate double CalcDelegate(double x, double y);
+
+    public delegate T AddDelegate<T>(T x, T y);
+
+    class ExampleClass
+    {
+        public int AddInt(int x, int y)
+        {
+            return x + y;
+        }
+        public static char AddChar(char x, char y)
+        {
+            return (char)(x + y);
+        }        
+    }
+    class Calculator
+    {
+        public double Add(double x, double y)
+        {
+            Console.WriteLine("Add");
+            return x + y;
+        }
+        public static double Sub(double x, double y)
+        {
+            Console.WriteLine("Sub");
+            return x - y;
+        }
+
+        public double Mult(double x, double y)
+        {
+            Console.WriteLine("Mult");
+            return x * y;
+        }
+
+        public double Div(double x, double y)
+        {
+            Console.WriteLine("Div");
+            if (y != 0)
+            {
+                return x / y;
+            }
+            throw new DivideByZeroException();
+        }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //Calculator calculator = new Calculator();
+
+            //CalcDelegate calc = Calculator.Sub;
+            //calc += calculator.Add;
+            //calc += calculator.Div;
+            //calc += calculator.Mult;
+
+            //calc -= calculator.Div;
+
+            //calc(2.4, 5.7);
+
+            ////foreach (CalcDelegate item in calc.GetInvocationList())
+            ////{
+            ////    try
+            ////    {
+            ////        Console.WriteLine(item(23.5, 5.78));
+            ////    }
+            ////    catch (Exception ex)
+            ////    {
+            ////        Console.WriteLine(ex.Message);
+            ////    }
+            ////}
+
+            //--------------------------------------------------
+
+            //Calculator calculator = new Calculator();
+
+            //Console.Write("Enter expression: ");
+
+            //string expression = Console.ReadLine();
+
+            //char sign = ' ';
+
+            //foreach (char item in expression)
+            //{
+            //    if (item=='+'||item=='-'||item=='*'||item=='/')
+            //    {
+            //        sign = item;
+            //        break;
+            //    }
+            //}
+            //try
+            //{
+            //    string[] numbers = expression.Split(sign);
+
+            //    CalcDelegate del = null;
+
+            //    switch (sign)
+            //    {
+            //        case '+':
+            //            del = new CalcDelegate(calculator.Add);
+            //            break;
+            //        case '-':
+            //            del = Calculator.Sub;
+            //            break;
+            //        case '*':
+            //            del = calculator.Mult;
+            //            break;
+            //        case '/':
+            //            del = calculator.Div;
+            //            break;
+            //        default:
+            //            throw new InvalidOperationException();
+            //    }
+
+            //    Console.WriteLine($"Result: {del(double.Parse(numbers[0]),double.Parse(numbers[1]))}");
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.Message);
+            //}
+
+            //------------------------------------------------
+
+            Calculator calculator = new Calculator();
+            ExampleClass example = new ExampleClass();
+
+            AddDelegate<double> delDouble = calculator.Add;
+            Console.WriteLine($"Result: {delDouble(34.6,23.7)}");
+
+            AddDelegate<int> delInt = example.AddInt;
+            Console.WriteLine($"Result: {delInt(36,23)}");
+
+            AddDelegate<char> delChar = ExampleClass.AddChar;
+            Console.WriteLine($"Result: {delChar('S','h')}");
+        }
+    }
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+    class Student
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateTime BirthDate { get; set; }
+    }
+
+////////////////////////////////
+
+	List<Student> group = new List<Student> {
+                new Student {
+                    FirstName = "John",
+                    LastName = "Miller",
+                    BirthDate = new DateTime(1997,3,12)
+                },
+                new Student {
+                    FirstName = "Candice",
+                    LastName = "Leman",
+                    BirthDate = new DateTime(1998,7,22)
+                },
+                new Student {
+                    FirstName = "Joey",
+                    LastName = "Finch",
+                    BirthDate = new DateTime(1996,11,30)
+                },
+                new Student {
+                    FirstName = "Nicole",
+                    LastName = "Taylor",
+                    BirthDate = new DateTime(1996,5,10)
+                }
+            };

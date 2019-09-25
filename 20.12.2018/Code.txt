@@ -1,0 +1,412 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace BirdInterface
+{
+    interface IFly
+    {
+        void Fly();
+    }
+
+    interface ISwim
+    {
+        void Swim();
+    }
+
+    interface IRun
+    {
+        void Run();
+    }
+
+    abstract class Bird
+    {
+        protected string name;
+
+        public void IsEggs() { }
+
+        //public abstract void Fly(); - проблема, так как существуют птицы, которые не летают - решение - Interface
+    }
+
+    class Duck : Bird, IFly, ISwim
+    {
+        public Duck()
+        {
+            name = "Duck";
+        }
+        public void Fly() { Console.WriteLine(name); }
+        public void Swim() { }
+    }
+
+    class Penguin : Bird, ISwim
+    {
+        public Penguin()
+        {
+            name = "Penguin";
+        }
+
+        public void Swim() { }
+    }
+
+    class Ostrich : Bird, IRun // страус
+    {
+        public Ostrich()
+        {
+            name = "Ostrich";
+        }
+        public void Run() { }
+    }
+
+    abstract class Insect // насекомое
+    {
+        protected string name;
+    }
+
+    class Butterfly : Insect, IFly
+    {
+        public Butterfly()
+        {
+            name = "Butterfly";
+        }
+
+        public void Fly() { Console.WriteLine(name); }
+    }
+
+    class Plane : IFly
+    {
+        string name = "Plane";
+        public void Fly() { Console.WriteLine(name); }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            IFly[] iFly = { new Duck(), new Butterfly(), new Plane() };
+
+            foreach (IFly item in iFly)
+            {
+                item.Fly();
+            }
+
+            // применение is и as
+            Bird[] birds = { new Penguin(), new Ostrich(), new Duck() };
+
+            foreach (Bird item in birds)
+            {
+                // необходимо вызвать метод Fly()
+                if (item is IFly)
+                {
+                    (item as IFly).Fly();
+                }
+            }
+
+            Console.Read();
+        }
+    }
+}
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+using System;
+using static System.Console;
+
+namespace SimpleProject
+{
+    abstract class Human
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateTime BirthDate { get; set; }
+        public override string ToString()
+        {
+            return $"\nФамилия: {LastName} Имя: {FirstName} Дата рождения: {BirthDate.ToLongDateString()}";
+        }
+    }
+    abstract class Employee : Human
+    {
+        public string Position { get; set; }
+        public double Salary { get; set; }
+
+        public override string ToString()
+        {
+            return base.ToString() + $"\nДолжность: {Position} Заработная плата: {Salary} $";
+        }
+    }
+    interface IWorker
+    {
+        bool IsWorking { get; }
+        string Work();
+    }
+    interface IManager
+    {
+        IWorker[] ListOfWorkers { get; set; }
+        void Organize();
+        void MakeBudget();
+        void Control();
+    }
+    class Director : Employee, IManager
+    {
+        public IWorker[] ListOfWorkers { get; set; }
+
+        public void Control()
+        {
+            WriteLine("Контролирую работу!");
+        }
+
+        public void MakeBudget()
+        {
+            WriteLine("Формирую бюджет!");
+        }
+
+        public void Organize()
+        {
+            WriteLine("Организую работу!");
+        }
+    }
+
+    class Seller : Employee, IWorker
+    {
+        bool isWorking = true;
+
+        public bool IsWorking
+        {
+            get
+            {
+                return isWorking;
+            }
+        }
+
+        public string Work()
+        {
+            return "Продаю товар!";
+        }
+    }
+
+    class Cashier : Employee, IWorker
+    {
+        bool isWorking = true;
+        public bool IsWorking
+        {
+            get
+            {
+                return isWorking;
+            }
+        }
+
+        public string Work()
+        {
+            return "Принимаю оплату за товар!";
+        }
+    }
+
+    class Storekeeper : Employee, IWorker
+    {
+        bool isWorking = true;
+        public bool IsWorking
+        {
+            get
+            {
+                return isWorking;
+            }
+        }
+
+        public string Work()
+        {
+            return "Учитываю товар!";
+        }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Director director = new Director { LastName = "Doe", FirstName = "John", BirthDate = new DateTime(1998, 10, 12), Position = "Директор", Salary = 12000 };
+
+            IWorker seller = new Seller { LastName = "Beam", FirstName = "Jim", BirthDate = new DateTime(1956, 5, 23), Position = "Продавец", Salary = 3780 };
+
+            if (seller is Employee)
+                WriteLine($"Заработная плата продавца: {(seller as Employee).Salary}"); // приведение интерфейсной ссылки к классу Employee
+
+            director.ListOfWorkers = new IWorker[] {
+                seller,
+                new Cashier { LastName = "Smith", FirstName = "Nicole", BirthDate = new DateTime(1956, 5, 23), Position = "Кассир", Salary = 3780 },
+                new Storekeeper { LastName = "Ross", FirstName = "Bob", BirthDate = new DateTime(1956, 5, 23), Position = "Кладовщик", Salary = 4500 }
+            };
+
+            WriteLine(director);
+            if (director is IManager) // использование оператора is
+            {
+                director.Control();
+            }
+
+            foreach (IWorker item in director.ListOfWorkers)
+            {
+                WriteLine(item);
+
+                if (item.IsWorking)
+                {
+                    WriteLine(item.Work());
+                }
+            }
+        }
+    }
+}
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    interface IA
+    {
+        void Show();
+    }
+    interface IB
+    {
+        void Show();
+    }
+    interface IC
+    {
+        void Show();
+    }
+
+    class Realization : IA, IB, IC
+    {
+        public void Show()
+        {
+            Console.WriteLine("IC");
+        }
+
+        void IA.Show()
+        {
+            Console.WriteLine("IA");
+        }
+
+        void IB.Show()
+        {
+            Console.WriteLine("IB");
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Realization realization = new Realization();
+            realization.Show();
+
+            IA iA = new Realization();
+            iA.Show();
+
+            (realization as IB).Show();
+
+            Console.ReadKey();
+        }
+    }
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+class StudentCard
+{
+    public int Number { get; set; }
+    public string Series { get; set; }
+
+    public override string ToString()
+    {
+        return $"Студенческий билет: {Series} {Number}";
+    }
+}
+
+-----------------------------------------------------------------------------------
+
+
+class Student
+{
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public DateTime BirthDate { get; set; }
+    public StudentCard StudentCard { get; set; }
+
+    public override string ToString()
+    {
+        return $"Фамилия: {LastName}, Имя: {FirstName}, Родился: {BirthDate.ToLongDateString()}, {StudentCard}";
+    }
+}
+
+-------------------------------------------------------------------------------------
+
+class Auditory
+{
+    Student[] students =
+        {
+        new Student {
+            FirstName ="John",
+            LastName ="Miller",
+            BirthDate =new DateTime(1997,3,12),
+            StudentCard =new StudentCard { Number=189356, Series="AB" }
+        },
+        new Student {
+            FirstName ="Candice",
+            LastName ="Leman",
+            BirthDate =new DateTime(1998,7,22),
+            StudentCard =new StudentCard { Number=345185, Series="XA" }
+        },
+        new Student {
+            FirstName ="Joey",
+            LastName ="Finch",
+            BirthDate =new DateTime(1996,11,30),
+            StudentCard =new StudentCard { Number=258322, Series="AA" }
+        },
+        new Student {
+            FirstName ="Nicole",
+            LastName ="Taylor",
+            BirthDate =new DateTime(1996,5,10),
+            StudentCard =new StudentCard { Number=513484, Series="AA" }
+        }
+    };
+    public void Sort()
+    {
+        Array.Sort(students);
+    }
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+using System;
+using static System.Console;
+
+namespace SimpleProject
+{
+    class Child:ICloneable
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
+        public override string ToString()
+        {
+            return $"Имя: {Name}, Возраст: {Age}";
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Child child1 = new Child { Name = "Arthur", Age = 12 };
+
+            WriteLine("Начальные значения:");
+            Child child2 = (Child)child1.Clone();
+            WriteLine($"Ребенок №1: {child1}");
+            WriteLine($"Ребенок №2: {child2}");
+
+            child2.Age = 14; // изменяем возраст
+
+            WriteLine("\nЗначения после изменения возраста:");
+            WriteLine($"Ребенок №1: {child1}");
+            WriteLine($"Ребенок №2: {child2}");
+        }
+    }
+}
